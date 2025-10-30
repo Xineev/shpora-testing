@@ -19,8 +19,7 @@ public class ObjectComparison
     /// 4.Ясность ошибок - FluentAssertions в случае если тест был не пройден предоставит явный конкретный список полей, в которых ожидаемые значения не совпали
     ///     с фактическими, что значительно упростило отладку, к примеру я сходу смог понять что мне нужно исключить сравнение Id-шников объектов, в
     ///     случае альтернативной реализации ниже пришлось бы пользоваться отладчиком и тратить дополнительное время, чтобы определить проблему
-    /// 5.Защита от циклических вызовов - FluentAssertions по умолчанию выставляет ограничение в 10 рекурсивных вызовов сравнения вложенных объектов,
-    ///     и явно сообщает о наличии циклической зависимости если число рекурсивных вызовов окзалось больше
+    /// 5.Защита от циклических вызовов - FluentAssertions позволяет обойти ситуацию циклических ссылок, предотвращая появление StackOverflow Exception
     /// </summary>
     [Test]
     [Description("Проверка текущего царя")]
@@ -32,8 +31,8 @@ public class ObjectComparison
             new Person("Vasili III of Russia", 28, 170, 60, null));
 
         actualTsar.Should().BeEquivalentTo(expectedTsar, options => options
-            .Excluding(t => t.Id)
-            .Excluding(t => t.Parent.Id));
+            .Excluding(member => member.Name == "Id" && member.DeclaringType == typeof(Person))
+            .IgnoringCyclicReferences());
     }
 
     /// <summary>

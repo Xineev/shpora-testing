@@ -16,6 +16,5 @@ public class Person
         Age = age;
         Height = height;
         Weight = weight;
-        Parent = parent;
     }
 }
